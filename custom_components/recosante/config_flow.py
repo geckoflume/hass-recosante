@@ -4,32 +4,13 @@ import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant import config_entries
 from homeassistant.core import HomeAssistant
-from homeassistant.const import CONF_USERNAME, CONF_PASSWORD
 from homeassistant.core import callback
-from .const import DOMAIN, TITLE, CONF_INSEE_CODE, CONF_CODE_POSTAL, CONF_CITY
-from .api import AtmoFranceDataApi, INSEEAPI
+from .const import DOMAIN, TITLE, CONF_INSEE_CODE, CONF_CITY
+from .api import INSEEAPI
 
 _LOGGER = logging.getLogger(__name__)
 
-AUTHENT_SCHEMA = vol.Schema(
-    {
-        vol.Required(CONF_USERNAME, default=""): cv.string,
-        vol.Required(CONF_PASSWORD, default=""): cv.string,
-    }
-)
-ZIPCODE_SCHEMA = vol.Schema(
-    {vol.Required(CONF_CODE_POSTAL, default=""): cv.string}
-)
-
-
-async def validate_credentials(hass: HomeAssistant, data: dict) -> None:
-    """Validate user credential to access API"""
-    session = async_get_clientsession(hass)
-    try:
-        client = AtmoFranceDataApi(data, session,hass=hass)
-        await client.async_get_token()
-    except ValueError as exc:
-        raise exc
+ZIPCODE_SCHEMA = vol.Schema({vol.Required("zip_code", default=""): cv.string})
 
 
 async def get_insee_code(hass: HomeAssistant, data: dict) -> None:
@@ -47,7 +28,7 @@ def _build_place_key(city) -> str:
 
 
 class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
-    """Handle a config flow for AirAtmo."""
+    """Handle a config flow for Recosanté."""
 
     def __init__(self):
         """Initialize"""
@@ -70,33 +51,23 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def async_step_user(self, user_input=None):
         """Handle the initial step."""
-        errors = {}
-        _LOGGER.debug("in async_step_user !!")
-        if user_input is not None:
-            try:
-                await validate_credentials(self.hass, user_input)
-            except ValueError:
-                errors["base"] = "auth"
-            if not errors:
-                self.data = user_input
-                return await self.async_step_location()
-        return self._show_setup_form("user", user_input, AUTHENT_SCHEMA, errors)
+        return await self.async_step_location(user_input)
 
     async def async_step_location(self, user_input=None):
         """Handle location step"""
         errors = {}
-        _LOGGER.debug("in async_step_location !!")
         if user_input is not None:
             city_insee = user_input.get(CONF_INSEE_CODE)
             if not city_insee:
                 # get INSEE Code
                 try:
                     self.city_insee = await get_insee_code(
-                        self.hass, user_input[CONF_CODE_POSTAL]
+                        self.hass, user_input["zip_code"]
                     )
                 except ValueError:
                     errors["base"] = "noinsee"
                 if not errors:
+                    self.data = user_input
                     return await self.async_step_multilocation()
                 else:
                     return self._show_setup_form(

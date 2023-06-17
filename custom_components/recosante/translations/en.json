@@ -1,21 +1,12 @@
 {
     "config": {
         "error": {
-            "auth": "Impossible to get auth token. Check your credentials",
             "noinsee": "Impossible to get INSEE code. Check ZIP code and logs."
         },
         "step": {
-            "user": {
-                "data": {
-                    "username": "Username",
-                    "password": "Password "
-                },
-                "description": "Enter your Atmo Data credentials.",
-                "title": "Authentication"
-            },
             "location": {
                 "data": {
-                    "code_postal": "ZIP code"
+                    "zip_code": "ZIP code"
                 },
                 "description": "Set your ZIP code",
                 "title": "Location"

@@ -1,5 +1,5 @@
 {
-	"name": "AtmoFrance ",
+	"name": "hass-recosante",
 	"image": "mcr.microsoft.com/devcontainers/python:0-3.11",
 	"appPort": [
 		"9123:8123"

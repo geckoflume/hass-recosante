@@ -1,21 +1,12 @@
 {
     "config": {
         "error": {
-            "auth": "Impossible de recupérer le token. Vérifiez vos identifiants",
-            "noinsee": "Impossible de récupérer le code INSEE. Vérifiez le code postal et les logs."
+            "noinsee": "Impossible de recupérer le code INSEE. Vérifiez le code postal et les logs."
         },
         "step": {
-            "user": {
-                "data": {
-                    "username": "Nom d'utilisateur",
-                    "password": "Mot de passe"
-                },
-                "description": "Entrez vos identifiants Atmo Data",
-                "title": "Authentification"
-            },
             "location": {
                 "data": {
-                    "code_postal": "Code postal"
+                    "zip_code": "Code postal"
                 },
                 "description": "Saisissez votre code postal",
                 "title": "Localisation"
